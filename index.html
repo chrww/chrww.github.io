@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Piano</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .piano {
+            background: #2a2a2a;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .keys-container {
+            position: relative;
+            display: flex;
+            background: #2a2a2a;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .white-keys {
+            display: flex;
+            position: relative;
+            gap: 4px;
+            z-index: 1;
+        }
+
+        .white-key {
+            width: 50px;
+            height: 180px;
+            background: #fff;
+            border-radius: 0 0 6px 6px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 8px;
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .white-key:hover {
+            background: #f0f0f0;
+        }
+
+        .white-key:active {
+            background: #e0e0e0;
+            transform: translateY(1px);
+        }
+
+        .black-keys {
+            position: absolute;
+            display: flex;
+            width: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .black-key {
+            position: absolute;
+            width: 32px;
+            height: 110px;
+            background: #000;
+            border-radius: 0 0 4px 4px;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.1s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 8px;
+            color: #666;
+            font-size: 11px;
+            z-index: 2;
+            top: 0;
+        }
+
+        .black-key:hover {
+            background: #222;
+        }
+
+        .black-key:active {
+            background: #333;
+            transform: translateY(1px);
+        }
+
+        /* First octave black keys */
+        .black-key:nth-child(1) { left: 35px; }  /* C# */
+        .black-key:nth-child(2) { left: 89px; }  /* D# */
+        .black-key:nth-child(3) { left: 197px; } /* F# */
+        .black-key:nth-child(4) { left: 251px; } /* G# */
+        .black-key:nth-child(5) { left: 305px; } /* A# */
+
+        /* Second octave black keys */
+        .black-key:nth-child(6) { left: 413px; } /* C# */
+        .black-key:nth-child(7) { left: 467px; } /* D# */
+        .black-key:nth-child(8) { left: 575px; } /* F# */
+        .black-key:nth-child(9) { left: 629px; } /* G# */
+        .black-key:nth-child(10) { left: 683px; } /* A# */
+    </style>
+</head>
+<body>
+    <div class="piano">
+        <div class="keys-container">
+            <div class="white-keys">
+                <!-- First octave white keys -->
+                <div class="white-key" data-note="C3">C</div>
+                <div class="white-key" data-note="D3">D</div>
+                <div class="white-key" data-note="E3">E</div>
+                <div class="white-key" data-note="F3">F</div>
+                <div class="white-key" data-note="G3">G</div>
+                <div class="white-key" data-note="A3">A</div>
+                <div class="white-key" data-note="B3">B</div>
+                <!-- Second octave white keys -->
+                <div class="white-key" data-note="C4">C</div>
+                <div class="white-key" data-note="D4">D</div>
+                <div class="white-key" data-note="E4">E</div>
+                <div class="white-key" data-note="F4">F</div>
+                <div class="white-key" data-note="G4">G</div>
+                <div class="white-key" data-note="A4">A</div>
+                <div class="white-key" data-note="B4">B</div>
+            </div>
+            <div class="black-keys">
+                <!-- First octave black keys -->
+                <div class="black-key" data-note="C#3">C#</div>
+                <div class="black-key" data-note="D#3">D#</div>
+                <div class="black-key" data-note="F#3">F#</div>
+                <div class="black-key" data-note="G#3">G#</div>
+                <div class="black-key" data-note="A#3">A#</div>
+                <!-- Second octave black keys -->
+                <div class="black-key" data-note="C#4">C#</div>
+                <div class="black-key" data-note="D#4">D#</div>
+                <div class="black-key" data-note="F#4">F#</div>
+                <div class="black-key" data-note="G#4">G#</div>
+                <div class="black-key" data-note="A#4">A#</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Audio context for sound generation
+        let audioContext;
+
+        // Initialize audio context on first user interaction
+        document.addEventListener('click', initAudio, { once: true });
+
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        // Function to play a note
+        function playNote(noteName) {
+            if (!audioContext) return;
+
+            const noteFreq = getNoteFrequency(noteName);
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.value = noteFreq;
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 1);
+        }
+
+        // Calculate frequency for a given note
+        function getNoteFrequency(note) {
+            const noteMap = {
+                'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5,
+                'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11
+            };
+
+            const octave = parseInt(note.slice(-1));
+            const noteName = note.slice(0, -1);
+            const semitonesFromA4 = (octave - 4) * 12 + noteMap[noteName] - noteMap['A'];
+            return 440 * Math.pow(2, semitonesFromA4 / 12);
+        }
+
+        // Add click listeners to all keys
+        document.querySelectorAll('.white-key, .black-key').forEach(key => {
+            key.addEventListener('mousedown', () => {
+                const note = key.dataset.note;
+                playNote(note);
+                key.style.transform = 'translateY(1px)';
+            });
+
+            key.addEventListener('mouseup', () => {
+                key.style.transform = 'translateY(0)';
+            });
+
+            key.addEventListener('mouseleave', () => {
+                key.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Keyboard mapping for two octaves
+        const keyboardMap = {
+            // First octave
+            'a': 'C3', 'w': 'C#3', 's': 'D3', 'e': 'D#3', 'd': 'E3',
+            'f': 'F3', 't': 'F#3', 'g': 'G3', 'y': 'G#3', 'h': 'A3',
+            'u': 'A#3', 'j': 'B3',
+            // Second octave
+            'k': 'C4', 'o': 'C#4', 'l': 'D4', 'p': 'D#4', ';': 'E4',
+            "'": 'F4', ']': 'F#4', '\\': 'G4'
+        };
+
+        document.addEventListener('keydown', (event) => {
+            if (!event.repeat) {  // Prevent key repeat
+                const note = keyboardMap[event.key];
+                if (note) {
+                    playNote(note);
+                    const key = document.querySelector(`[data-note="${note}"]`);
+                    if (key) {
+                        key.style.transform = 'translateY(1px)';
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (event) => {
+            const note = keyboardMap[event.key];
+            if (note) {
+                const key = document.querySelector(`[data-note="${note}"]`);
+                if (key) {
+                    key.style.transform = 'translateY(0)';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
