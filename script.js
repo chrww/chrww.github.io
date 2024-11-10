@@ -12,6 +12,7 @@ document.addEventListener('touchstart', () => {
 // Object to track which notes are currently pressed
 const activeNotes = {};
 const keysPressed = new Set(); // Track currently pressed keys
+const activeTouches = new Set();
 
 // Set a higher audio context sample rate
 Tone.context.sampleRate = 44100;
@@ -92,11 +93,13 @@ document.querySelectorAll('.key').forEach(key => {
         event.preventDefault(); // Prevent scrolling
         playTone(note); // Play the note
         key.classList.add('active'); // Add active class
+        activeTouches.add(event.changedTouches[0].identifier); // Track active touch
     });
 
     key.addEventListener('touchend', () => {
         stopTone(note); // Stop the note
         key.classList.remove('active'); // Remove active class
+        activeTouches.delete(event.changedTouches[0].identifier); // Remove active touch
     });
 });
 
@@ -116,10 +119,12 @@ document.addEventListener('touchend', (event) => {
         stopTone(note); // Stop only the note for the touched key
         touchedKey.classList.remove('active'); // Remove active class for that key
     } else {
-        // If touch ends outside of keys, stop all active notes
-        Object.keys(activeNotes).forEach(stopTone);
-        document.querySelectorAll('.key.active').forEach(key => {
-            key.classList.remove('active'); // Reset all keys
-        });
+        // Stop all notes only if no active touches remain
+        if (activeTouches.size === 0) {
+            Object.keys(activeNotes).forEach(stopTone); // Stop all notes
+            document.querySelectorAll('.key.active').forEach(key => {
+                key.classList.remove('active'); // Reset all keys
+            });
+        }   
     }
 });
