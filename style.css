@@ -38,13 +38,13 @@ body {
 @media (max-width: 600px) {
   .keys-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Two columns on small screens */
-    gap: 4px; /* Maintain gap between keys */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px; /* Maintain gap between keys */
     }
 
   .key {
     width: 100%; /* Still full width in a vertical stack */
-    min-height: 40px; /* Ensure good height for touch */
+    min-height: 5px; /* Ensure good height for touch */
   }
 
 }

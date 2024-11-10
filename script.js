@@ -1,9 +1,13 @@
+
 // Create a polyphonic synth and connect it to the master output (speakers)
 const synth = new Tone.PolySynth(Tone.Synth).toDestination();
 
 // Object to track which notes are currently pressed
 const activeNotes = {};
 const keysPressed = new Set(); // Track currently pressed keys
+
+// Set a higher audio context sample rate
+Tone.context.sampleRate = 44100;
 
 // Map keyboard keys to musical notes
 const keyToNote = {
