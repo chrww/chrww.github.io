@@ -1,0 +1,105 @@
+// Create a polyphonic synth and connect it to the master output (speakers)
+const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+
+// Object to track which notes are currently pressed
+const activeNotes = {};
+const keysPressed = new Set(); // Track currently pressed keys
+
+// Map keyboard keys to musical notes
+const keyToNote = {
+    'a': 'C4',
+    'w': 'C#4',
+    's': 'D4',
+    'e': 'D#4',
+    'd': 'E4',
+    'f': 'F4',
+    't': 'F#4',
+    'g': 'G4',
+    'y': 'G#4',
+    'h': 'A4',
+    'u': 'A#4',
+    'j': 'B4'
+};
+
+// Function to play a note
+function playTone(note) {
+    if (!activeNotes[note]) { // Check if the note is already playing
+        synth.triggerAttack(note); // Start the note
+        activeNotes[note] = true; // Mark the note as active
+    }
+}
+
+// Function to stop a note
+function stopTone(note) {
+    if (activeNotes[note]) { // Check if the note is active
+        synth.triggerRelease(note); // Release the note
+        delete activeNotes[note]; // Remove from active notes
+    }
+}
+
+// Handle keyboard events
+document.addEventListener('keydown', (event) => {
+    const note = keyToNote[event.key]; // Get the note based on the pressed key
+    if (note && !keysPressed.has(event.key)) {
+        keysPressed.add(event.key); // Add the key to the set of pressed keys
+        playTone(note); // Play the corresponding note
+
+        // Add visual feedback for keyboard
+        const keyElement = document.querySelector(`.key[data-note="${note}"]`);
+        keyElement?.classList.add('active'); // Add active class if exists
+    }
+});
+
+document.addEventListener('keyup', (event) => {
+    const note = keyToNote[event.key]; // Get the note based on the released key
+    if (note) {
+        stopTone(note); // Stop the corresponding note
+        keysPressed.delete(event.key); // Remove the key from the set of pressed keys
+
+        // Remove visual feedback for keyboard
+        const keyElement = document.querySelector(`.key[data-note="${note}"]`);
+        keyElement?.classList.remove('active'); // Remove active class if exists
+    }
+});
+
+// Add mouse event listeners to keys
+document.querySelectorAll('.key').forEach(key => {
+    const note = key.getAttribute('data-note'); // Get the note once
+
+    key.addEventListener('mousedown', () => {
+        playTone(note); // Play the note
+        key.classList.add('active'); // Add active class for visual feedback
+    });
+
+    key.addEventListener('mouseup', () => {
+        stopTone(note); // Stop the note
+        key.classList.remove('active'); // Remove active class
+    });
+
+    // Touch events for mobile
+    key.addEventListener('touchstart', (event) => {
+        event.preventDefault(); // Prevent scrolling
+        playTone(note); // Play the note
+        key.classList.add('active'); // Add active class
+    });
+
+    key.addEventListener('touchend', () => {
+        stopTone(note); // Stop the note
+        key.classList.remove('active'); // Remove active class
+    });
+});
+
+// Stop all notes on mouseup anywhere in the document
+document.addEventListener('mouseup', () => {
+    Object.keys(activeNotes).forEach(stopTone); // Stop each active note
+    document.querySelectorAll('.key.active').forEach(key => {
+        key.classList.remove('active'); // Reset all keys
+    });
+});
+
+document.addEventListener('touchend', () => {
+    Object.keys(activeNotes).forEach(stopTone); // Stop each active note
+    document.querySelectorAll('.key.active').forEach(key => {
+        key.classList.remove('active'); // Reset all keys
+    });
+});

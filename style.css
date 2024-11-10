@@ -1,0 +1,55 @@
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  height: 100%;
+  background: #de9a72;
+}
+
+.piano {
+  width: 500px;
+  max-width: 1000px;
+  margin: auto; 
+}
+
+.keys-container {
+  background: #b5660f;
+  display: grid;
+  gap: 6px;
+  padding:8px;
+  grid-template-columns: repeat(6, 1fr); 
+}
+
+.key {
+  aspect-ratio: 1;
+  width: 100%;
+  min-height: 40px;
+  background: #fcfea7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s, transform 0.1s; /* Smooth transition */
+}
+
+@media (max-width: 600px) {
+  .keys-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Two columns on small screens */
+    gap: 4px; /* Maintain gap between keys */
+    }
+
+  .key {
+    width: 100%; /* Still full width in a vertical stack */
+    min-height: 40px; /* Ensure good height for touch */
+  }
+
+}
+
+.key:active, .key.active {
+    background: #ffe6f1;;
+    transform: translateY(1px);
+}
