@@ -6,7 +6,6 @@ html {
 body {
   height: 100%;
   background: #de9a72;
-  margin: 0; /* Remove default margin */
 }
 
 .piano {
@@ -21,7 +20,7 @@ body {
   background: #b5660f;
   display: grid;
   gap: 6px;
-  padding:8px;
+  padding:6px;
   grid-template-columns: repeat(6, 1fr); 
 }
 
@@ -45,7 +44,7 @@ body {
   
   .keys-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* Flexible columns */
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 5px;
     }
 }
