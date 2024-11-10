@@ -1,130 +1,112 @@
-
-// Create a polyphonic synth and connect it to the master output (speakers)
+// Create a polyphonic synth and connect it to the master output
 const synth = new Tone.PolySynth(Tone.Synth).toDestination();
 
 // Ensure the audio context is resumed after user interaction
 document.addEventListener('touchstart', () => {
-    Tone.start().then(() => {
-        console.log("Audio context resumed");
-    });
+    Tone.start().then(() => console.log("Audio context resumed"));
 });
+
+// Constants for key mappings
+const KEY_TO_NOTE = {
+    'a': 'C4', 'w': 'C#4', 's': 'D4', 'e': 'D#4',
+    'd': 'E4', 'f': 'F4', 't': 'F#4', 'g': 'G4',
+    'y': 'G#4', 'h': 'A4', 'u': 'A#4', 'j': 'B4'
+};
 
 // Object to track which notes are currently pressed
 const activeNotes = {};
-const keysPressed = new Set(); // Track currently pressed keys
 const activeTouches = new Set();
-
-// Set a higher audio context sample rate
-Tone.context.sampleRate = 44100;
-
-// Map keyboard keys to musical notes
-const keyToNote = {
-    'a': 'C4',
-    'w': 'C#4',
-    's': 'D4',
-    'e': 'D#4',
-    'd': 'E4',
-    'f': 'F4',
-    't': 'F#4',
-    'g': 'G4',
-    'y': 'G#4',
-    'h': 'A4',
-    'u': 'A#4',
-    'j': 'B4'
-};
 
 // Function to play a note
 function playTone(note) {
-    if (!activeNotes[note]) { // Check if the note is already playing
-        synth.triggerAttack(note); // Start the note
-        activeNotes[note] = true; // Mark the note as active
+    if (!activeNotes[note]) {
+        synth.triggerAttack(note);
+        activeNotes[note] = true;
     }
 }
 
 // Function to stop a note
 function stopTone(note) {
-    if (activeNotes[note]) { // Check if the note is active
-        synth.triggerRelease(note); // Release the note
-        delete activeNotes[note]; // Remove from active notes
+    if (activeNotes[note]) {
+        synth.triggerRelease(note);
+        delete activeNotes[note];
     }
 }
 
-// Handle keyboard events
-document.addEventListener('keydown', (event) => {
-    const note = keyToNote[event.key]; // Get the note based on the pressed key
-    if (note && !keysPressed.has(event.key)) {
-        keysPressed.add(event.key); // Add the key to the set of pressed keys
-        playTone(note); // Play the corresponding note
-
-        // Add visual feedback for keyboard
-        const keyElement = document.querySelector(`.key[data-note="${note}"]`);
-        keyElement?.classList.add('active'); // Add active class if exists
+// Function to handle key interaction
+function handleKeyInteraction(note, isActive) {
+    if (isActive) {
+        playTone(note);
+    } else {
+        stopTone(note);
     }
-});
+}
 
-document.addEventListener('keyup', (event) => {
-    const note = keyToNote[event.key]; // Get the note based on the released key
+// Function to handle keyboard events
+function handleKeyboardEvent(event) {
+    const note = KEY_TO_NOTE[event.key];
     if (note) {
-        stopTone(note); // Stop the corresponding note
-        keysPressed.delete(event.key); // Remove the key from the set of pressed keys
-
-        // Remove visual feedback for keyboard
+        handleKeyInteraction(note, event.type === 'keydown');
         const keyElement = document.querySelector(`.key[data-note="${note}"]`);
-        keyElement?.classList.remove('active'); // Remove active class if exists
+        if (keyElement) {
+            keyElement.classList.toggle('active', event.type === 'keydown');
+        }
     }
-});
+}
 
-// Add mouse event listeners to keys
-document.querySelectorAll('.key').forEach(key => {
-    const note = key.getAttribute('data-note'); // Get the note once
+// Function to handle mouse and touch events
+function handleMouseTouchEvent(note, isActive) {
+    handleKeyInteraction(note, isActive);
+}
 
-    key.addEventListener('mousedown', () => {
-        playTone(note); // Play the note
-        key.classList.add('active'); // Add active class for visual feedback
+// Initialize key event listeners
+function initKeyListeners() {
+    document.querySelectorAll('.key').forEach(key => {
+        const note = key.getAttribute('data-note');
+
+        // Mouse events
+        key.addEventListener('mousedown', () => handleMouseTouchEvent(note, true));
+        key.addEventListener('mouseup', () => handleMouseTouchEvent(note, false));
+
+        // Touch events
+        key.addEventListener('touchstart', (event) => {
+            event.preventDefault();
+            handleMouseTouchEvent(note, true);
+            activeTouches.add(event.changedTouches[0].identifier);
+            key.classList.add('active');
+        });
+
+        key.addEventListener('touchend', (event) => {
+            handleMouseTouchEvent(note, false);
+            activeTouches.delete(event.changedTouches[0].identifier);
+        });
     });
+}
 
-    key.addEventListener('mouseup', () => {
-        stopTone(note); // Stop the note
-        key.classList.remove('active'); // Remove active class
-    });
-
-    // Touch events for mobile
-    key.addEventListener('touchstart', (event) => {
-        event.preventDefault(); // Prevent scrolling
-        playTone(note); // Play the note
-        key.classList.add('active'); // Add active class
-        activeTouches.add(event.changedTouches[0].identifier); // Track active touch
-    });
-
-    key.addEventListener('touchend', (event) => {
-        stopTone(note); // Stop the note
-        key.classList.remove('active'); // Remove active class
-        activeTouches.delete(event.changedTouches[0].identifier); // Remove active touch
-    });
-});
-
+// Global mouseup event to stop all notes if necessary
 document.addEventListener('mouseup', (event) => {
     if (!event.target.classList.contains('key')) {
-        Object.keys(activeNotes).forEach(stopTone); // Stop each active note only if not clicking a key
+        Object.keys(activeNotes).forEach(stopTone);
     }
 });
 
-// Handle touchend to stop only the notes of active keys
+// Global touchend event to manage active touches
 document.addEventListener('touchend', (event) => {
-    // Check if the touch ended on a key
     const touchedKey = event.target.closest('.key');
     
     if (touchedKey) {
         const note = touchedKey.getAttribute('data-note');
-        stopTone(note); // Stop only the note for the touched key
-        touchedKey.classList.remove('active'); // Remove active class for that key
-    } 
-
-    // Check if there are no active touches remaining before stopping all notes
+        handleMouseTouchEvent(note, false);
+        touchedKey.classList.remove('active');
+    }
+    
     if (activeTouches.size === 0) {
-        Object.keys(activeNotes).forEach(stopTone); // Stop all notes
-        document.querySelectorAll('.key.active').forEach(key => {
-            key.classList.remove('active'); // Reset all keys
-        });
+        Object.keys(activeNotes).forEach(stopTone);
+        document.querySelectorAll('.key.active').forEach(key => key.classList.remove('active'));
     }
 });
+
+// Initialize event listeners
+document.addEventListener('keydown', handleKeyboardEvent);
+document.addEventListener('keyup', handleKeyboardEvent);
+initKeyListeners();
