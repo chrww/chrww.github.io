@@ -100,17 +100,26 @@ document.querySelectorAll('.key').forEach(key => {
     });
 });
 
-// Stop all notes on mouseup anywhere in the document
-document.addEventListener('mouseup', () => {
-    Object.keys(activeNotes).forEach(stopTone); // Stop each active note
-    document.querySelectorAll('.key.active').forEach(key => {
-        key.classList.remove('active'); // Reset all keys
-    });
+document.addEventListener('mouseup', (event) => {
+    if (!event.target.classList.contains('key')) {
+        Object.keys(activeNotes).forEach(stopTone); // Stop each active note only if not clicking a key
+    }
 });
 
-document.addEventListener('touchend', () => {
-    Object.keys(activeNotes).forEach(stopTone); // Stop each active note
-    document.querySelectorAll('.key.active').forEach(key => {
-        key.classList.remove('active'); // Reset all keys
-    });
+// Handle touchend to stop only the notes of active keys
+document.addEventListener('touchend', (event) => {
+    // Check if the touch ended on a key
+    const touchedKey = event.target.closest('.key');
+    
+    if (touchedKey) {
+        const note = touchedKey.getAttribute('data-note');
+        stopTone(note); // Stop only the note for the touched key
+        touchedKey.classList.remove('active'); // Remove active class for that key
+    } else {
+        // If touch ends outside of keys, stop all active notes
+        Object.keys(activeNotes).forEach(stopTone);
+        document.querySelectorAll('.key.active').forEach(key => {
+            key.classList.remove('active'); // Reset all keys
+        });
+    }
 });
