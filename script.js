@@ -96,7 +96,7 @@ document.querySelectorAll('.key').forEach(key => {
         activeTouches.add(event.changedTouches[0].identifier); // Track active touch
     });
 
-    key.addEventListener('touchend', () => {
+    key.addEventListener('touchend', (event) => {
         stopTone(note); // Stop the note
         key.classList.remove('active'); // Remove active class
         activeTouches.delete(event.changedTouches[0].identifier); // Remove active touch
@@ -118,13 +118,13 @@ document.addEventListener('touchend', (event) => {
         const note = touchedKey.getAttribute('data-note');
         stopTone(note); // Stop only the note for the touched key
         touchedKey.classList.remove('active'); // Remove active class for that key
-    } else {
-        // Stop all notes only if no active touches remain
-        if (activeTouches.size === 0) {
-            Object.keys(activeNotes).forEach(stopTone); // Stop all notes
-            document.querySelectorAll('.key.active').forEach(key => {
-                key.classList.remove('active'); // Reset all keys
-            });
-        }   
+    } 
+
+    // Check if there are no active touches remaining before stopping all notes
+    if (activeTouches.size === 0) {
+        Object.keys(activeNotes).forEach(stopTone); // Stop all notes
+        document.querySelectorAll('.key.active').forEach(key => {
+            key.classList.remove('active'); // Reset all keys
+        });
     }
 });
