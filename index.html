@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html>
 
 <head>
@@ -31,3 +32,333 @@
 </body>
 
 </html>
+=======
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Piano</title>
+    <style>
+        /* CSS Variables */
+        :root {
+            --piano-bg: #2c1810;
+            --key-light: #e8c9a3;
+            --key-hover: #f3d9bc;
+            --key-active: #d4b595;
+            --text-color: #2c1810;
+            --autumn-accent: #bf6841;
+            --border-accent: #e8c9a3;
+        }
+
+        /* Base Styles */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #1a0f0a, #2c1810);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Piano Container */
+        .piano {
+            background: var(--piano-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(44, 24, 16, 0.4);
+            border: 3px solid var(--border-accent);
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Keys Grid */
+        .keys-container {
+            display: grid;
+            gap: 6px;
+            background: linear-gradient(to bottom, #3c241c, var(--piano-bg));
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        /* Individual Keys */
+        .key {
+            aspect-ratio: 1;
+            width: 100%;
+            background: var(--key-light);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            font-weight: 500;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 
+                0 4px 6px rgba(0, 0, 0, 0.1),
+                inset 0 1px 3px rgba(255, 255, 255, 0.2);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* Row-alternating checkerboard pattern */
+        .key {
+            background: var(--key-light);
+            color: var(--text-color);
+        }
+
+        /* First row pattern */
+        .key:nth-child(2n):nth-child(-n+6) {
+            background: linear-gradient(145deg, var(--autumn-accent), #a55735);
+            color: #fff;
+        }
+
+        /* Second row pattern - reverse */
+        .key:nth-child(2n-1):nth-child(n+7):nth-child(-n+12) {
+            background: linear-gradient(145deg, var(--autumn-accent), #a55735);
+            color: #fff;
+        }
+
+        /* Third row pattern - same as first row */
+        .key:nth-child(2n):nth-child(n+13):nth-child(-n+18) {
+            background: linear-gradient(145deg, var(--autumn-accent), #a55735);
+            color: #fff;
+        }
+
+        /* Fourth row pattern - same as second row */
+        .key:nth-child(2n-1):nth-child(n+19):nth-child(-n+24) {
+            background: linear-gradient(145deg, var(--autumn-accent), #a55735);
+            color: #fff;
+        }
+
+        /* Hover and Active States */
+        @media (hover: hover) {
+            .key:hover {
+                background: var(--key-hover);
+                transform: translateY(-1px);
+            }
+        }
+
+        .key:active, .key.active {
+            background: var(--key-active);
+            transform: translateY(1px);
+        }
+
+        /* Title */
+        .piano::before {
+            content: '🍁 Simple Piano';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #e8c9a3;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        /* Responsive text size */
+        @media (max-width: 768px) {
+            .key {
+                font-size: 12px;
+            }
+            .piano::before {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .piano {
+                padding: 12px;
+            }
+            .keys-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .key {
+                font-size: 11px;
+            }
+
+            /* Adjust checkerboard pattern for 3-column layout */
+            .key:nth-child(odd) {
+                background: var(--key-light);
+                color: var(--text-color);
+            }
+            .key:nth-child(even) {
+                background: linear-gradient(145deg, var(--autumn-accent), #a55735);
+                color: #fff;
+            }
+        }
+
+        /* Prevent scrolling on iOS when playing piano */
+        body.playing {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="piano">
+        <div class="keys-container">
+            <!-- First row -->
+            <div class="key" data-note="C3">C3</div>
+            <div class="key" data-note="C#3">C#3</div>
+            <div class="key" data-note="D3">D3</div>
+            <div class="key" data-note="D#3">D#3</div>
+            <div class="key" data-note="E3">E3</div>
+            <div class="key" data-note="F3">F3</div>
+            <!-- Second row -->
+            <div class="key" data-note="F#3">F#3</div>
+            <div class="key" data-note="G3">G3</div>
+            <div class="key" data-note="G#3">G#3</div>
+            <div class="key" data-note="A3">A3</div>
+            <div class="key" data-note="A#3">A#3</div>
+            <div class="key" data-note="B3">B3</div>
+            <!-- Third row -->
+            <div class="key" data-note="C4">C4</div>
+            <div class="key" data-note="C#4">C#4</div>
+            <div class="key" data-note="D4">D4</div>
+            <div class="key" data-note="D#4">D#4</div>
+            <div class="key" data-note="E4">E4</div>
+            <div class="key" data-note="F4">F4</div>
+            <!-- Fourth row -->
+            <div class="key" data-note="F#4">F#4</div>
+            <div class="key" data-note="G4">G4</div>
+            <div class="key" data-note="G#4">G#4</div>
+            <div class="key" data-note="A4">A4</div>
+            <div class="key" data-note="A#4">A#4</div>
+            <div class="key" data-note="B4">B4</div>
+        </div>
+    </div>
+
+    <script>
+        // Audio Context Management
+        const AudioManager = {
+            context: null,
+            activeOscillators: new Map(),
+
+            init() {
+                this.context = new (window.AudioContext || window.webkitAudioContext)();
+            },
+
+            createSoundNodes() {
+                const oscillator = this.context.createOscillator();
+                const gainNode = this.context.createGain();
+                const filterNode = this.context.createBiquadFilter();
+
+                oscillator.type = 'triangle';
+                filterNode.type = 'lowpass';
+                filterNode.frequency.value = 1000;
+                filterNode.Q.value = 1;
+
+                oscillator.connect(filterNode);
+                filterNode.connect(gainNode);
+                gainNode.connect(this.context.destination);
+
+                return { oscillator, gainNode, filterNode };
+            },
+
+            getNoteFrequency(note) {
+                const noteMap = {
+                    'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5,
+                    'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11
+                };
+
+                const octave = parseInt(note.slice(-1));
+                const noteName = note.slice(0, -1);
+                const semitonesFromA4 = (octave - 4) * 12 + noteMap[noteName] - noteMap['A'];
+                return 440 * Math.pow(2, semitonesFromA4 / 12);
+            }
+        };
+
+        // Piano Key Management
+        const PianoController = {
+            keyboardMap: {
+                'a': 'C3', 'w': 'C#3', 's': 'D3', 'e': 'D#3', 'd': 'E3',
+                'f': 'F3', 't': 'F#3', 'g': 'G3', 'y': 'G#3', 'h': 'A3',
+                'u': 'A#3', 'j': 'B3',
+                'k': 'C4', 'o': 'C#4', 'l': 'D4', 'p': 'D#4', ';': 'E4',
+                "'": 'F4', ']': 'F#4', '\\': 'G4'
+            },
+
+            init() {
+                this.setupEventListeners();
+            },
+
+            setupEventListeners() {
+                document.querySelectorAll('.key').forEach(key => {
+                    // Mouse/Touch events
+                    key.addEventListener('mousedown', () => this.playNote(key.dataset.note));
+                    key.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        document.body.classList.add('playing');
+                        this.playNote(key.dataset.note);
+                    });
+                    key.addEventListener('touchend', () => {
+                        document.body.classList.remove('playing');
+                    });
+                });
+
+                // Keyboard events
+                document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+                document.addEventListener('keyup', (e) => this.handleKeyUp(e));
+                
+                // Initialize audio context on first interaction
+                document.addEventListener('click', () => AudioManager.init(), { once: true });
+                document.addEventListener('touchstart', () => AudioManager.init(), { once: true });
+            },
+
+            playNote(noteName) {
+                if (!AudioManager.context) return;
+
+                const frequency = AudioManager.getNoteFrequency(noteName);
+                const { oscillator, gainNode } = AudioManager.createSoundNodes();
+                
+                oscillator.frequency.value = frequency;
+                
+                const now = AudioManager.context.currentTime;
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.3, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 1);
+                
+                oscillator.start();
+                oscillator.stop(now + 1);
+                
+                AudioManager.activeOscillators.set(noteName, { oscillator, gainNode });
+                setTimeout(() => AudioManager.activeOscillators.delete(noteName), 1000);
+            },
+
+            handleKeyDown(event) {
+                if (!event.repeat) {
+                    const note = this.keyboardMap[event.key];
+                    if (note) {
+                        this.playNote(note);
+                        const key = document.querySelector(`[data-note="${note}"]`);
+                        if (key) key.classList.add('active');
+                    }
+                }
+            },
+
+            handleKeyUp(event) {
+                const note = this.keyboardMap[event.key];
+                if (note) {
+                    const key = document.querySelector(`[data-note="${note}"]`);
+                    if (key) key.classList.remove('active');
+                }
+            }
+        };
+
+        // Initialize Piano
+        PianoController.init();
+    </script>
+</body>
+</html>
+>>>>>>> 2fe1ed2334f4dcf45a2aa6ac5ecaf7213e0d3fb4
