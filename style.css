@@ -40,13 +40,13 @@ body {
 
 @media (max-width: 600px) {
   .piano {
-    padding: 50px;
+    padding: 40px;
   }
   
   .keys-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Flexible columns */
-    gap: 5px; 
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* Flexible columns */
+    gap: 5px;
     }
 }
 
