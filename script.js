@@ -2,6 +2,13 @@
 // Create a polyphonic synth and connect it to the master output (speakers)
 const synth = new Tone.PolySynth(Tone.Synth).toDestination();
 
+// Ensure the audio context is resumed after user interaction
+document.addEventListener('touchstart', () => {
+    Tone.start().then(() => {
+        console.log("Audio context resumed");
+    });
+});
+
 // Object to track which notes are currently pressed
 const activeNotes = {};
 const keysPressed = new Set(); // Track currently pressed keys

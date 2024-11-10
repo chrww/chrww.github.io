@@ -9,9 +9,10 @@ body {
 }
 
 .piano {
-  width: 500px;
-  max-width: 1000px;
-  margin: auto; 
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+  padding: 0;
 }
 
 .keys-container {
@@ -36,15 +37,22 @@ body {
 }
 
 @media (max-width: 600px) {
+
+  .piano {
+    padding: 20px;
+  }
+
   .keys-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* Flexible columns */
     gap: 5px; /* Maintain gap between keys */
     }
 
   .key {
+    aspect-ratio: 1;
     width: 100%; /* Still full width in a vertical stack */
-    min-height: 5px; /* Ensure good height for touch */
+    min-height: 50px; /* Ensure good height for touch */
+    max-height: 60px;
   }
 
 }
